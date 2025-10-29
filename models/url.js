@@ -11,6 +11,10 @@ const urlScehma=new Schema({
         required:true,
     },
     visitHistory:[{timeStamp:{type: Number}}],
+    createdBy:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"users",
+    }
 },
 {timestamps:true},
 );

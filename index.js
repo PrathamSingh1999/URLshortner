@@ -1,9 +1,12 @@
 import express from "express";
 import path from "path";
-import urlRoutes from  './routes/url.js'
+import cookieParser from "cookie-parser"
 import {connectToMongoDB} from './connect.js'
 import {URL} from './models/url.js'
+import urlRoutes from  './routes/url.js'
 import staticRoute from './routes/staticRouter.js'
+import userRoute from './routes/user.js'
+import {restrictToLoggedinUserOnly,checkAuth} from "./middlewares/auth.js"
 
 const app=express();
 const PORT=8001;
@@ -18,12 +21,13 @@ app.set('views',path.resolve('./views'));
 
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
+app.use(cookieParser());
 
 
 
-app.use("/url",urlRoutes);
-
-app.use("/",staticRoute);
+app.use("/url",restrictToLoggedinUserOnly,urlRoutes);
+app.use("/user",userRoute);
+app.use("/",checkAuth,staticRoute);
 
 app.get('/url/:shortId',async (req,res)=>{
      const shortId=req.params.shortId;
